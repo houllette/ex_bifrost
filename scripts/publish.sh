@@ -116,7 +116,7 @@ check_version() {
   cd "$PROJECT_ROOT"
 
   local version
-  version=$(grep '@version' mix.exs | sed -E 's/.*"(.+)".*/\1/')
+  version=$(grep -E '^\s*@version "' mix.exs | head -1 | sed -E 's/.*"(.+)".*/\1/')
 
   echo_info "Current version: $version"
 
@@ -192,7 +192,7 @@ create_git_tag() {
   cd "$PROJECT_ROOT"
 
   local version
-  version=$(grep '@version' mix.exs | sed -E 's/.*"(.+)".*/\1/')
+  version=$(grep -E '^\s*@version "' mix.exs | head -1 | sed -E 's/.*"(.+)".*/\1/')
   local tag="v$version"
 
   if git rev-parse "$tag" >/dev/null 2>&1; then
