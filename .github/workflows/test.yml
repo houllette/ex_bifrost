@@ -72,21 +72,51 @@ jobs:
 
       # The SBOM (bom.cdx.json) is committed and kept in sync by the
       # pre-commit hook; this check catches drift (e.g. dep changes committed
-      # with hooks disabled). Timestamp and serial number are excluded from
-      # the comparison — they change on every generation.
+      # with hooks disabled). Only fields derived deterministically from
+      # mix.exs/mix.lock are compared (purl, version, hashes, dependency
+      # graph): `mix sbom` enriches licenses/links/descriptions via the
+      # hex.pm API, which varies with network conditions and rate limits, so
+      # the committed SBOM — generated locally by the pre-commit hook — is
+      # the enriched copy and those fields are excluded here.
       - name: Verify SBOM is up to date
         run: |
           cp bom.cdx.json /tmp/committed-bom.json
-          MIX_ENV=dev mix sbom
+          # The hex.pm metadata fetch can crash mix sbom on a slow response
+          # (5s task timeout inside the fetcher) — retry transient failures.
+          for attempt in 1 2 3; do
+            if MIX_ENV=dev mix sbom; then break; fi
+            if [ "$attempt" = 3 ]; then
+              echo "::error::mix sbom failed after 3 attempts"
+              exit 1
+            fi
+            echo "mix sbom failed (attempt $attempt) — retrying"
+            sleep 10
+          done
           python3 - <<'PY'
           import difflib, json, sys
+
+          KEEP = {"bom-ref", "type", "name", "version", "purl", "scope", "hashes"}
+
+          def prune(component):
+              return {k: v for k, v in component.items() if k in KEEP}
 
           def normalize(path):
               with open(path) as f:
                   bom = json.load(f)
-              bom.pop("serialNumber", None)
-              bom.get("metadata", {}).pop("timestamp", None)
-              return bom
+              return {
+                  "root": prune(bom.get("metadata", {}).get("component", {})),
+                  "components": sorted(
+                      (prune(c) for c in bom.get("components", [])),
+                      key=lambda c: (c.get("purl") or c.get("name", ""), c.get("version", "")),
+                  ),
+                  "dependencies": sorted(
+                      (
+                          {"ref": d.get("ref"), "dependsOn": sorted(d.get("dependsOn", []))}
+                          for d in bom.get("dependencies", [])
+                      ),
+                      key=lambda d: d["ref"] or "",
+                  ),
+              }
 
           committed = normalize("/tmp/committed-bom.json")
           fresh = normalize("bom.cdx.json")
