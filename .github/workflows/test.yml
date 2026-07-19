@@ -77,7 +77,9 @@ jobs:
       # graph): `mix sbom` enriches licenses/links/descriptions via the
       # hex.pm API, which varies with network conditions and rate limits, so
       # the committed SBOM — generated locally by the pre-commit hook — is
-      # the enriched copy and those fields are excluded here.
+      # the enriched copy and those fields are excluded here. System (OTP /
+      # Elixir stdlib) components are excluded too: their versions track
+      # whatever toolchain build generated the bom, not mix.lock.
       - name: Verify SBOM is up to date
         run: |
           cp bom.cdx.json /tmp/committed-bom.json
@@ -103,19 +105,28 @@ jobs:
           def normalize(path):
               with open(path) as f:
                   bom = json.load(f)
+              root = prune(bom.get("metadata", {}).get("component", {}))
+              components = [
+                  prune(c)
+                  for c in bom.get("components", [])
+                  if (c.get("purl") or "").startswith("pkg:hex/")
+              ]
+              kept_refs = {c.get("bom-ref") for c in components} | {root.get("bom-ref")}
+              dependencies = [
+                  {
+                      "ref": d.get("ref"),
+                      "dependsOn": sorted(r for r in d.get("dependsOn", []) if r in kept_refs),
+                  }
+                  for d in bom.get("dependencies", [])
+                  if d.get("ref") in kept_refs
+              ]
               return {
-                  "root": prune(bom.get("metadata", {}).get("component", {})),
+                  "root": root,
                   "components": sorted(
-                      (prune(c) for c in bom.get("components", [])),
+                      components,
                       key=lambda c: (c.get("purl") or c.get("name", ""), c.get("version", "")),
                   ),
-                  "dependencies": sorted(
-                      (
-                          {"ref": d.get("ref"), "dependsOn": sorted(d.get("dependsOn", []))}
-                          for d in bom.get("dependencies", [])
-                      ),
-                      key=lambda d: d["ref"] or "",
-                  ),
+                  "dependencies": sorted(dependencies, key=lambda d: d["ref"] or ""),
               }
 
           committed = normalize("/tmp/committed-bom.json")
