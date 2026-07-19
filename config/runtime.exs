@@ -37,3 +37,7 @@ if config_env() == :dev do
   config :logger,
     level: :debug
 end
+
+# Added by setup.sh
+config :ex_bifrost,
+  base_url: System.get_env("API_BASE_URL", "http://localhost:8080")

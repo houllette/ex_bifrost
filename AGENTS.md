@@ -1,18 +1,29 @@
 # Agent Guidelines
 
-## About this repo
-
-This repo starts life as the [Elixir SDK Generator](https://github.com/houllette/elixir-sdk-generator)
-*template*: it generates an Elixir SDK from an OpenAPI specification. If
-`generator-config.yaml` still contains `{{PACKAGE_NAME}}` placeholders, the
-project hasn't been configured yet — run `./scripts/setup.sh` (or the
-`/setup-sdk` skill, which is one-shot and removed by setup) first, and don't
-try to run mix tasks (there is no `mix.exs` until the first generation). Once
-configured and generated, delete this paragraph and fill in the "Project
-overview" section below. For ongoing spec/template changes use the
-`/regenerate` skill.
-
 ## Project overview
+
+`ex_bifrost` is the Elixir SDK for [Bifrost](https://github.com/maximhq/bifrost),
+the LLM gateway by Maxim. It is generated from Bifrost's OpenAPI spec
+(`openapi-spec.yaml`, synced weekly from the URL in `.spec-source`:
+`https://raw.githubusercontent.com/maximhq/bifrost/refs/heads/dev/docs/openapi/openapi.json`).
+All generated code lives under the `ExBifrost` module namespace; API modules
+are in `ExBifrost.Api.*` (ChatCompletions, Providers, Models, Embeddings,
+Files, Governance, MCP, …) and typed models in `ExBifrost.Model.*`. The
+default base URL is `http://localhost:8080` (a self-hosted gateway).
+
+Known upstream spec issues patched locally in `openapi-spec.yaml` (re-apply
+if a spec sync reintroduces them, or upstream them to maximhq/bifrost):
+
+- `/api/governance/teams*` operations reused the operationIds of
+  `/api/teams*` — renamed to `listGovernanceTeams`, `createGovernanceTeam`,
+  `getGovernanceTeam`, `updateGovernanceTeam`, `deleteGovernanceTeam`.
+- `POST /v1/files` declared `provider` both as a query parameter and a
+  multipart form field, producing a duplicate-map-key compiler warning —
+  the redundant query parameter was removed (the form field and
+  `x-model-provider` header remain).
+
+`.credo.exs` relaxes three spec-driven checks (line length, predicate
+naming, struct field count) for generated `lib/` only.
 
 <!-- After setup: one paragraph on which API this SDK wraps, the module
      namespace, and anything non-obvious. -->

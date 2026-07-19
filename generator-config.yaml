@@ -24,29 +24,29 @@ templateDir: .openapi-generator/templates
 # The lib/ path is filled in by scripts/setup.sh (underscored module name).
 files:
   application.ex.mustache:
-    folder: lib/{{LIB_DIR}}
+    folder: lib/ex_bifrost
     destinationFilename: application.ex
     templateType: SupportingFiles
 
 # Additional properties for the elixir generator
 additionalProperties:
   # Package name (will be replaced by setup.sh)
-  packageName: "{{PACKAGE_NAME}}"
+  packageName: "ex_bifrost"
 
   # Module namespace for generated code (will be replaced by setup.sh;
   # defaults to the camelized package name, e.g. my_api -> MyAPI).
-  invokerPackage: "{{MODULE_NAME}}"
+  invokerPackage: "ExBifrost"
 
   # Package version
   packageVersion: "0.1.0"
 
   # Description used in mix.exs (will be replaced by setup.sh).
   # Falls back to the spec's info.description when empty.
-  sdkDescription: "{{DESCRIPTION}}"
+  sdkDescription: "Elixir SDK for Bifrost, the LLM gateway by Maxim"
 
   # SPDX license id used in mix.exs (will be replaced by setup.sh)
-  licenseId: "{{LICENSE_ID}}"
+  licenseId: "MIT"
 
   # GitHub repo (will be replaced by setup.sh)
-  gitRepoId: "{{GIT_REPO}}"
-  gitUserId: "{{GIT_USER}}"
+  gitRepoId: "ex_bifrost"
+  gitUserId: "houllette"

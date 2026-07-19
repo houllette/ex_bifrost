@@ -72,8 +72,8 @@ Feature suggestions are welcome! Please:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/elixir-sdk-generator.git
-cd elixir-sdk-generator
+git clone https://github.com/your-username/ex_bifrost.git
+cd ex_bifrost
 
 # Install dependencies
 mix deps.get
@@ -149,7 +149,7 @@ Use descriptive branch names:
 ## Project Structure
 
 ```
-elixir-sdk-generator/
+ex_bifrost/
 ├── .github/workflows/      # CI/CD workflows
 ├── .openapi-generator/     # Custom templates
 │   └── templates/
