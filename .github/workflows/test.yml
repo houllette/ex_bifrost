@@ -79,7 +79,7 @@ jobs:
           cp bom.cdx.json /tmp/committed-bom.json
           MIX_ENV=dev mix sbom
           python3 - <<'PY'
-          import json, sys
+          import difflib, json, sys
 
           def normalize(path):
               with open(path) as f:
@@ -88,7 +88,17 @@ jobs:
               bom.get("metadata", {}).pop("timestamp", None)
               return bom
 
-          if normalize("/tmp/committed-bom.json") != normalize("bom.cdx.json"):
+          committed = normalize("/tmp/committed-bom.json")
+          fresh = normalize("bom.cdx.json")
+          if committed != fresh:
+              diff = difflib.unified_diff(
+                  json.dumps(committed, indent=2, sort_keys=True).splitlines(),
+                  json.dumps(fresh, indent=2, sort_keys=True).splitlines(),
+                  fromfile="committed bom.cdx.json",
+                  tofile="freshly generated bom.cdx.json",
+                  lineterm="",
+              )
+              print("\n".join(diff))
               print("::error::bom.cdx.json is out of date. Run 'mix sbom' and commit the result")
               print("::error::(or enable the versioned hooks: git config core.hooksPath .githooks).")
               sys.exit(1)
