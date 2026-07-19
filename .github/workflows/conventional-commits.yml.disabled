@@ -1,0 +1,27 @@
+# Enforce conventional-commit PR titles
+#
+# Release automation (release.yml / git_ops) derives version bumps from
+# conventional commit messages. With squash merges, the PR title becomes the
+# commit message, so validating titles here keeps the history releasable:
+#   fix: ...              -> patch
+#   feat: ...             -> minor
+#   feat!: ... / BREAKING CHANGE -> major
+#   chore:/docs:/test:/ci:/refactor: ... -> no release
+name: Conventional Commits
+
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  lint-pr-title:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

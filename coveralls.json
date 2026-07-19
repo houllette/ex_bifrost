@@ -1,0 +1,9 @@
+{
+  "coverage_options": {
+    "minimum_coverage": 0
+  },
+  "skip_files": [
+    "test/support"
+  ],
+  "__comment": "minimum_coverage is 0 so a freshly generated SDK passes CI. Raise it (e.g. to 80) once you have added tests for your API operations."
+}
