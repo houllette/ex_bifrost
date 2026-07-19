@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Pre-commit hook (activated by `git config core.hooksPath .githooks`,
-# which scripts/setup.sh does automatically).
+# done once at SDK setup time).
 #
 # Keeps the committed SBOM (bom.cdx.json) in sync: whenever the dependency
 # set changes (mix.exs / mix.lock staged), the SBOM is regenerated and added

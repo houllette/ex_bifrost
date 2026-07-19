@@ -93,7 +93,7 @@ defmodule {{moduleName}}.RequestBuilder do
     |> Map.update!(:body, fn multipart ->
       Tesla.Multipart.add_field(
         multipart,
-        key,
+        to_string(key),
         JSON.encode!(value),
         headers: [{:"Content-Type", "application/json"}]
       )
@@ -111,16 +111,40 @@ defmodule {{moduleName}}.RequestBuilder do
 
   def add_param(request, :file, name, path) do
     request
-    |> Map.put_new_lazy(:body, &Tesla.Multipart.new/0)
-    |> Map.update!(:body, &(Tesla.Multipart.add_file(&1, path, name: name)))
+    |> ensure_multipart_body()
+    |> Map.update!(:body, &(Tesla.Multipart.add_file(&1, path, name: to_string(name))))
   end
 
   def add_param(request, :form, name, value) do
-    Map.update(request, :body, %{name => value}, &(Map.put(&1, name, value)))
+    case request do
+      %{body: %Tesla.Multipart{} = multipart} ->
+        %{request | body: Tesla.Multipart.add_field(multipart, to_string(name), to_string(value))}
+
+      _ ->
+        Map.update(request, :body, %{name => value}, &(Map.put(&1, name, value)))
+    end
   end
 
   def add_param(request, location, key, value) do
     Map.update(request, location, [{key, value}], &(&1 ++ [{key, value}]))
+  end
+
+  # Operations can mix :form and :file parameters in any order; once a :file
+  # parameter is added the body must be a multipart, so any form fields
+  # collected so far are converted into multipart fields.
+  defp ensure_multipart_body(%{body: %Tesla.Multipart{}} = request), do: request
+
+  defp ensure_multipart_body(%{body: %{} = form_fields} = request) do
+    multipart =
+      Enum.reduce(form_fields, Tesla.Multipart.new(), fn {name, value}, multipart ->
+        Tesla.Multipart.add_field(multipart, to_string(name), to_string(value))
+      end)
+
+    %{request | body: multipart}
+  end
+
+  defp ensure_multipart_body(request) do
+    Map.put(request, :body, Tesla.Multipart.new())
   end
 
   @doc """
