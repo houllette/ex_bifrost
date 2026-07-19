@@ -2722,7 +2722,7 @@
         "otp:component:mox:hex:46712239",
         "otp:component:bypass:hex:15702215"
       ],
-      "ref": "otp:component:git_repo_id:github:127775562"
+      "ref": "otp:component:ex_bifrost:github:111867854"
     },
     { "ref": "otp:component:syntax_tools:otp:25983030" },
     {
@@ -3023,18 +3023,18 @@
   ],
   "metadata": {
     "component": {
-      "bom-ref": "otp:component:git_repo_id:github:127775562",
-      "cpe": "cpe:2.3:a:git_user_id:ex_bifrost:0.1.0:*:*:*:*:*:*:*",
+      "bom-ref": "otp:component:ex_bifrost:github:111867854",
+      "cpe": "cpe:2.3:a:houllette:ex_bifrost:0.1.0:*:*:*:*:*:*:*",
       "description": "Elixir SDK for Bifrost, the LLM gateway by Maxim\n",
       "externalReferences": [
         {
           "type": "vcs",
-          "url": "https://github.com/GIT_USER_ID/GIT_REPO_ID"
+          "url": "https://github.com/houllette/ex_bifrost"
         },
         {
           "comment": "changelog",
           "type": "documentation",
-          "url": "https://github.com/GIT_USER_ID/GIT_REPO_ID/blob/main/CHANGELOG.md"
+          "url": "https://github.com/houllette/ex_bifrost/blob/main/CHANGELOG.md"
         },
         {
           "comment": "generated with",
@@ -3044,7 +3044,7 @@
         {
           "comment": "github",
           "type": "vcs",
-          "url": "https://github.com/GIT_USER_ID/GIT_REPO_ID"
+          "url": "https://github.com/houllette/ex_bifrost"
         }
       ],
       "licenses": [
@@ -3056,12 +3056,12 @@
         }
       ],
       "name": "ex_bifrost",
-      "purl": "pkg:github/git_user_id/git_repo_id@0.1.0?download_url=https://github.com/GIT_USER_ID/GIT_REPO_ID/archive/0.1.0.tar.gz&vcs_url=git%2Bhttps://github.com/GIT_USER_ID/GIT_REPO_ID.git",
+      "purl": "pkg:github/houllette/ex_bifrost@0.1.0?download_url=https://github.com/houllette/ex_bifrost/archive/0.1.0.tar.gz&vcs_url=git%2Bhttps://github.com/houllette/ex_bifrost.git",
       "scope": "required",
       "type": "library",
       "version": "0.1.0"
     },
-    "timestamp": "2026-07-19T23:11:16Z",
+    "timestamp": "2026-07-19T23:24:04Z",
     "tools": {
       "components": [
         {
@@ -3074,7 +3074,7 @@
       ]
     }
   },
-  "serialNumber": "urn:uuid:b96c3e48-7849-461b-a8f2-b7e81ad7eb70",
+  "serialNumber": "urn:uuid:a5dfb9e3-abe4-4b9c-9390-15874ecf0eaf",
   "specVersion": "1.6",
   "version": 1
 }

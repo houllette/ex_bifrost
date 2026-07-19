@@ -25,9 +25,6 @@ if a spec sync reintroduces them, or upstream them to maximhq/bifrost):
 `.credo.exs` relaxes three spec-driven checks (line length, predicate
 naming, struct field count) for generated `lib/` only.
 
-<!-- After setup: one paragraph on which API this SDK wraps, the module
-     namespace, and anything non-obvious. -->
-
 ## Commands
 
 | Task | Command |

@@ -20,8 +20,13 @@ inputSpec: openapi-spec.yaml
 # Template directory (complete vendored template set)
 templateDir: .openapi-generator/templates
 
+# GitHub repo — must be top-level config keys (not additionalProperties) or
+# the generator falls back to its GIT_USER_ID/GIT_REPO_ID defaults in mix.exs
+gitUserId: "houllette"
+gitRepoId: "ex_bifrost"
+
 # Extra template files not part of the stock elixir generator.
-# The lib/ path is filled in by scripts/setup.sh (underscored module name).
+# The lib/ path must match the underscored package name.
 files:
   application.ex.mustache:
     folder: lib/ex_bifrost
@@ -30,23 +35,19 @@ files:
 
 # Additional properties for the elixir generator
 additionalProperties:
-  # Package name (will be replaced by setup.sh)
+  # Package name
   packageName: "ex_bifrost"
 
-  # Module namespace for generated code (will be replaced by setup.sh;
-  # defaults to the camelized package name, e.g. my_api -> MyAPI).
+  # Module namespace for generated code (defaults
+  # to the camelized package name, e.g. my_api -> MyAPI).
   invokerPackage: "ExBifrost"
 
   # Package version
   packageVersion: "0.1.0"
 
-  # Description used in mix.exs (will be replaced by setup.sh).
+  # Description used in mix.exs.
   # Falls back to the spec's info.description when empty.
   sdkDescription: "Elixir SDK for Bifrost, the LLM gateway by Maxim"
 
-  # SPDX license id used in mix.exs (will be replaced by setup.sh)
+  # SPDX license id used in mix.exs
   licenseId: "MIT"
-
-  # GitHub repo (will be replaced by setup.sh)
-  gitRepoId: "ex_bifrost"
-  gitUserId: "houllette"

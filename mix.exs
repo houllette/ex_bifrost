@@ -1,7 +1,7 @@
 defmodule ExBifrost.MixProject do
   use Mix.Project
 
-  @source_url "https://github.com/GIT_USER_ID/GIT_REPO_ID"
+  @source_url "https://github.com/houllette/ex_bifrost"
   @version "0.1.0"
 
   def project do

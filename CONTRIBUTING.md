@@ -215,14 +215,6 @@ end
 
 ## Running Scripts
 
-### Setup Script
-
-```bash
-./scripts/setup.sh
-```
-
-Initializes a new SDK project.
-
 ### Regenerate Script
 
 ```bash
