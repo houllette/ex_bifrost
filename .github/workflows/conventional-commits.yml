@@ -13,8 +13,7 @@ on:
   pull_request_target:
     types: [opened, edited, synchronize, reopened]
 
-permissions:
-  pull-requests: read
+permissions: {}
 
 jobs:
   lint-pr-title:
@@ -22,6 +21,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: amannn/action-semantic-pull-request@v5
+      # Validates the title from the event payload — no API calls, no token,
+      # no third-party action, and immune to GitHub API incidents (which
+      # repeatedly failed the previous action-based check on unrelated PRs).
+      - name: Check title against Conventional Commits
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          types='feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert'
+          if printf '%s' "$TITLE" | grep -qE "^($types)(\([a-zA-Z0-9_-]+\))?!?: .+"; then
+            echo "PR title OK: $TITLE"
+          else
+            echo "::error::PR title must follow Conventional Commits (e.g. 'feat: add X', 'fix(scope)!: change Y')."
+            echo "::error::Got: $TITLE"
+            exit 1
+          fi
