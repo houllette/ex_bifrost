@@ -58,6 +58,11 @@ jobs:
 
           curl -fsSL "$SPEC_URL" -o /tmp/latest-spec.yaml
 
+          # The committed spec has local patches applied (spec-patches/);
+          # patch the fresh download the same way before comparing, so
+          # unchanged upstream specs don't register as permanent drift.
+          ./scripts/apply-spec-patches.sh /tmp/latest-spec.yaml
+
           if cmp -s /tmp/latest-spec.yaml openapi-spec.yaml; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "Spec is up to date."

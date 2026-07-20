@@ -11,16 +11,22 @@ are in `ExBifrost.Api.*` (ChatCompletions, Providers, Models, Embeddings,
 Files, Governance, MCP, …) and typed models in `ExBifrost.Model.*`. The
 default base URL is `http://localhost:8080` (a self-hosted gateway).
 
-Known upstream spec issues patched locally in `openapi-spec.yaml` (re-apply
-if a spec sync reintroduces them, or upstream them to maximhq/bifrost):
+Known upstream spec issues are fixed by durable patches in `spec-patches/`
+(applied automatically after every spec download and before every
+regeneration — see `spec-patches/README.md`; upstream them to
+maximhq/bifrost and delete the patch once fixed):
 
-- `/api/governance/teams*` operations reused the operationIds of
-  `/api/teams*` — renamed to `listGovernanceTeams`, `createGovernanceTeam`,
+- `10-rename-governance-team-operation-ids.sh` —
+  `/api/governance/teams*` operations reuse the operationIds of
+  `/api/teams*`; renamed to `listGovernanceTeams`, `createGovernanceTeam`,
   `getGovernanceTeam`, `updateGovernanceTeam`, `deleteGovernanceTeam`.
-- `POST /v1/files` declared `provider` both as a query parameter and a
-  multipart form field, producing a duplicate-map-key compiler warning —
-  the redundant query parameter was removed (the form field and
-  `x-model-provider` header remain).
+- `20-remove-duplicate-files-provider-query-param.sh` — `POST /v1/files`
+  declares `provider` both as a query parameter and a multipart form field
+  (duplicate-map-key compiler warning); the redundant query parameter is
+  removed (the form field and `x-model-provider` header remain).
+
+Never hand-edit `openapi-spec.yaml` to fix upstream defects — spec-sync
+re-downloads it; add or update a patch instead.
 
 `.credo.exs` relaxes three spec-driven checks (line length, predicate
 naming, struct field count) for generated `lib/` only.
@@ -51,7 +57,8 @@ naming, struct field count) for generated `lib/` only.
 belongs in one of the persistent sources:
 
 - `openapi-spec.yaml` — the API contract (or its upstream source recorded in
-  `.spec-source`)
+  `.spec-source`); fix upstream spec defects with idempotent scripts in
+  `spec-patches/`, never by hand-editing the spec (spec-sync re-downloads it)
 - `.openapi-generator/templates/` — the COMPLETE vendored Mustache template
   set (the elixir generator does not fall back to built-in templates, so
   never delete files from this directory; see `generator-config.yaml` for

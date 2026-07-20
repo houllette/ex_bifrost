@@ -63,6 +63,14 @@ check_generator() {
   exit 1
 }
 
+# Apply local spec patches (durable fixes for upstream spec defects; see
+# spec-patches/README.md)
+apply_spec_patches() {
+  if [[ -x "$SCRIPT_DIR/apply-spec-patches.sh" ]]; then
+    "$SCRIPT_DIR/apply-spec-patches.sh" "$OPENAPI_SPEC"
+  fi
+}
+
 # Validate OpenAPI spec
 validate_spec() {
   echo_step "Validating OpenAPI specification..."
@@ -275,6 +283,7 @@ main() {
   echo ""
 
   check_generator
+  apply_spec_patches
   validate_spec
   backup_generated
   sync_package_version
