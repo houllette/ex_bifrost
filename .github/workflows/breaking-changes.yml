@@ -72,7 +72,11 @@ jobs:
             echo "functions_removed=false" >> $GITHUB_OUTPUT
           fi
 
+      # The PR comment is a nicety — the authoritative gate is the local
+      # "Fail if spec has breaking changes" step below. Don't let a GitHub
+      # API hiccup on the comment fail the whole check.
       - name: Comment on PR with results
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |
